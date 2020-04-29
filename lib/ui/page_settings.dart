@@ -19,7 +19,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
-
   sharePage() async {
     Share.share(
         "Toi aussi organise mieux tes journées avec #Taskist disponible sur Android et iOS");
@@ -27,11 +26,11 @@ class _SettingsPageState extends State<SettingsPage>
 
   rateApp() async {
     LaunchReview.launch(
-        androidAppId: "com.huextrat.taskist", iOSAppId: "1435481664");
+        androidAppId: "com.nhanquach.taskist", iOSAppId: "1435481664");
   }
 
   _launchURL() async {
-    const url = 'https://twitter.com/HugoExtrat';
+    const url = 'https://twitter.com/nhanquach';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -41,108 +40,44 @@ class _SettingsPageState extends State<SettingsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[
-          new Column(
-            children: <Widget>[
-              _getToolbar(context),
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.grey,
-                        height: 1.5,
-                      ),
-                    ),
-                    Expanded(
-                        flex: 2,
-                        child: new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Task',
-                              style: new TextStyle(
-                                  fontSize: 30.0, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Settings',
-                              style: new TextStyle(
-                                  fontSize: 28.0, color: Colors.grey),
-                            ),
-                          ],
-                        )),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.grey,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+    return Column(
+      children: <Widget>[
+        ListTile(
+          leading: Icon(
+            FontAwesomeIcons.cogs,
+            color: Colors.grey,
           ),
-
-          Padding(padding: EdgeInsets.only(top: 50.0),),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-
-              Card(
-                color: Colors.white,
-                elevation: 2.0,
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        FontAwesomeIcons.cogs,
-                        color: Colors.grey,
-                      ),
-                      title: Text("Version"),
-                      trailing: Text("1.0.0"),
-                    ),
-                    ListTile(
-                      onTap: _launchURL,
-                      leading: Icon(
-                        FontAwesomeIcons.twitter,
-                        color: Colors.blue,
-                      ),
-                      title: Text("Twitter"),
-                      trailing: Icon(Icons.arrow_right),
-                    ),
-                    ListTile(
-                      onTap: rateApp,
-                      leading: Icon(
-                        FontAwesomeIcons.star,
-                        color: Colors.blue,
-                      ),
-                      title: Text("Rate Taskist"),
-                      trailing: Icon(Icons.arrow_right),
-                    ),
-                    ListTile(
-                      onTap: sharePage,
-                      leading: Icon(
-                        FontAwesomeIcons.shareAlt,
-                        color: Colors.blue,
-                      ),
-                      title: Text("Share Taskist"),
-                      trailing: Icon(Icons.arrow_right),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          title: Text("Version"),
+          trailing: Text("1.0.0"),
+        ),
+        ListTile(
+          onTap: _launchURL,
+          leading: Icon(
+            FontAwesomeIcons.twitter,
+            color: Colors.blue,
           ),
-        ],
-      ),
+          title: Text("Twitter"),
+          trailing: Icon(Icons.arrow_right),
+        ),
+        ListTile(
+          onTap: rateApp,
+          leading: Icon(
+            FontAwesomeIcons.star,
+            color: Colors.blue,
+          ),
+          title: Text("Rate"),
+          trailing: Icon(Icons.arrow_right),
+        ),
+        ListTile(
+          onTap: sharePage,
+          leading: Icon(
+            FontAwesomeIcons.shareAlt,
+            color: Colors.blue,
+          ),
+          title: Text("Share"),
+          trailing: Icon(Icons.arrow_right),
+        ),
+      ],
     );
   }
 
@@ -164,14 +99,12 @@ class _SettingsPageState extends State<SettingsPage>
   Padding _getToolbar(BuildContext context) {
     return new Padding(
       padding: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-      child:
-      new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      child: new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         new Image(
             width: 40.0,
             height: 40.0,
             fit: BoxFit.cover,
-            image: new AssetImage('assets/list.png')
-        ),
+            image: new AssetImage('assets/list.png')),
       ]),
     );
   }

@@ -4,7 +4,7 @@ description: Task List App
 version: 1.0.0+6
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: '>=2.0.0-dev.68.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -16,9 +16,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  firebase_analytics: ^2.0.3
-  firebase_auth: ^0.8.2
-  cloud_firestore: ^0.9.7
+  firebase_analytics: ^5.0.11
+  firebase_auth: ^0.16.0
+  cloud_firestore: ^0.13.5
 
   font_awesome_flutter: ^8.0.1
 
@@ -33,8 +33,11 @@ dev_dependencies:
 
   connectivity: ^0.4.2
 
-flutter:
+  charts_flutter: ^0.9.0
+  google_fonts: ^0.4.0
+  outline_material_icons: ^0.1.1
 
+flutter:
   uses-material-design: true
 
   assets:

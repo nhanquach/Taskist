@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:taskist/model/element.dart';
 import 'package:taskist/utils/diamond_fab.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DetailPage extends StatefulWidget {
   final FirebaseUser user;
@@ -26,34 +27,22 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      body: new Stack(
-        children: <Widget>[
-          _getToolbar(context),
-          Container(
-            child: NotificationListener<OverscrollIndicatorNotification>(
-              onNotification: (overscroll) {
-                overscroll.disallowGlow();
-              },
-              child: new StreamBuilder<QuerySnapshot>(
-                  stream: Firestore.instance
-                      .collection(widget.user.uid)
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (!snapshot.hasData)
-                      return new Center(
-                          child: CircularProgressIndicator(
-                        backgroundColor: currentColor,
-                      ));
-                    return new Container(
-                      child: getExpenseItems(snapshot),
-                    );
-                  }),
-            ),
-          ),
-        ],
+      backgroundColor: currentColor,
+      body: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overscroll) {
+          overscroll.disallowGlow();
+        },
+        child: StreamBuilder<QuerySnapshot>(
+            stream: Firestore.instance.collection(widget.user.uid).snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (!snapshot.hasData)
+                return Center(
+                    child: CircularProgressIndicator(
+                  backgroundColor: autoColor,
+                ));
+              return getExpenseItems(snapshot);
+            }),
       ),
       floatingActionButton: DiamondFab(
         onPressed: () {
@@ -68,8 +57,8 @@ class _DetailPageState extends State<DetailPage> {
                         autofocus: true,
                         decoration: InputDecoration(
                             border: new OutlineInputBorder(
-                                borderSide: new BorderSide(
-                                    color: currentColor)),
+                                borderSide:
+                                    new BorderSide(color: currentColor)),
                             labelText: "Item",
                             hintText: "Item",
                             contentPadding: EdgeInsets.only(
@@ -119,8 +108,11 @@ class _DetailPageState extends State<DetailPage> {
             },
           );
         },
-        child: Icon(Icons.add),
-        backgroundColor: currentColor,
+        child: Icon(
+          Icons.add,
+          color: currentColor,
+        ),
+        backgroundColor: autoColor,
       ),
     );
   }
@@ -151,213 +143,292 @@ class _DetailPageState extends State<DetailPage> {
         }
       });
 
-      return Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: 150.0),
-            child: new Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 5.0, left: 50.0, right: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: Text(
-                          widget.currentList.keys.elementAt(widget.i),
-                          softWrap: true,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 35.0),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return new AlertDialog(
-                                title: Text("Delete: " + widget.currentList.keys.elementAt(widget.i).toString()),
-                                content: Text(
-                                    "Are you sure you want to delete this list?", style: TextStyle(fontWeight: FontWeight.w400),),
-                                actions: <Widget>[
-                                  ButtonTheme(
-                                    //minWidth: double.infinity,
-                                    child: RaisedButton(
-                                      elevation: 3.0,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('No'),
-                                      color: currentColor,
-                                      textColor: const Color(0xffffffff),
-                                    ),
-                                  ),
-                                  ButtonTheme(
-                                    //minWidth: double.infinity,
-                                    child: RaisedButton(
-                                      elevation: 3.0,
-                                      onPressed: () {
-                                        Firestore.instance
-                                            .collection(widget.user.uid)
-                                            .document(widget.currentList.keys
-                                            .elementAt(widget.i))
-                                            .delete();
-                                        Navigator.pop(context);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('YES'),
-                                      color: currentColor,
-                                      textColor: const Color(0xffffffff),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Icon(
-                          FontAwesomeIcons.trash,
-                          size: 25.0,
-                          color: currentColor,
-                        ),
-                      ),
-                    ],
+      return CustomScrollView(
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(32.0, 45.0, 8.0, 8.0),
+              child: Text(
+                widget.currentList.keys.elementAt(widget.i),
+                style: GoogleFonts.homemadeApple().merge(
+                  TextStyle(
+                    color: autoColor,
+                    fontSize: 30.0,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 5.0, left: 50.0),
-                  child: Row(
-                    children: <Widget>[
-                      new Text(
-                        nbIsDone.toString() +
-                            " of " +
-                            listElement.length.toString() +
-                            " tasks",
-                        style: TextStyle(fontSize: 18.0, color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 5.0),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          margin: EdgeInsets.only(left: 50.0),
-                          color: Colors.grey,
-                          height: 1.5,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: _getToolbar(context),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int i) {
+                return Slidable(
+                  delegate: SlidableBehindDelegate(),
+                  actionExtentRatio: 0.25,
+                  child: GestureDetector(
+                    onTap: () {
+                      Firestore.instance
+                          .collection(widget.user.uid)
+                          .document(widget.currentList.keys.elementAt(widget.i))
+                          .updateData({
+                        listElement.elementAt(i).name:
+                            !listElement.elementAt(i).isDone
+                      });
+                    },
+                    child: Container(
+                      height: 50.0,
+                      color: currentColor,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 50.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              listElement.elementAt(i).isDone
+                                  ? Icons.check
+                                  : Icons.check_box_outline_blank,
+                              color: autoColor,
+                              size: 36.0,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10.0),
+                            ),
+                            Flexible(
+                              child: Text(
+                                listElement.elementAt(i).name,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: listElement.elementAt(i).isDone
+                                    ? TextStyle(
+                                        decoration: TextDecoration.lineThrough,
+                                        color: autoColor.withAlpha(150),
+                                        fontSize: 27.0,
+                                      )
+                                    : TextStyle(
+                                        color: autoColor,
+                                        fontSize: 27.0,
+                                      ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 30.0),
-                  child: Column(
-                    children: <Widget>[
-                      Container(color: Color(0xFFFCFCFC),child:
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height - 350,
-                        child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: listElement.length,
-                            itemBuilder: (BuildContext ctxt, int i) {
-                              return new Slidable(
-                                delegate: new SlidableBehindDelegate(),
-                                actionExtentRatio: 0.25,
-                                child: GestureDetector(
-                                  onTap: () {
+                  secondaryActions: <Widget>[
+                    new IconSlideAction(
+                      caption: 'Delete',
+                      color: Colors.red,
+                      icon: Icons.delete,
+                      onTap: () {
+                        Firestore.instance
+                            .collection(widget.user.uid)
+                            .document(
+                                widget.currentList.keys.elementAt(widget.i))
+                            .updateData({listElement.elementAt(i).name: ""});
+                      },
+                    ),
+                  ],
+                );
+              },
+              childCount: listElement.length,
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 20.0,
+            ),
+          ),
+        ],
+      );
+
+      return Container(
+        color: currentColor,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 5.0, left: 50.0, right: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: Text(
+                      widget.currentList.keys.elementAt(widget.i),
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
+                      style: GoogleFonts.homemadeApple().merge(
+                        TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 35.0,
+                          color: autoColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new AlertDialog(
+                            title: Text("Delete: " +
+                                widget.currentList.keys
+                                    .elementAt(widget.i)
+                                    .toString()),
+                            content: Text(
+                              "Are you sure you want to delete this list?",
+                              style: TextStyle(fontWeight: FontWeight.w400),
+                            ),
+                            actions: <Widget>[
+                              ButtonTheme(
+                                //minWidth: double.infinity,
+                                child: RaisedButton(
+                                  elevation: 3.0,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('No'),
+                                  color: currentColor,
+                                  textColor: const Color(0xffffffff),
+                                ),
+                              ),
+                              ButtonTheme(
+                                //minWidth: double.infinity,
+                                child: RaisedButton(
+                                  elevation: 3.0,
+                                  onPressed: () {
                                     Firestore.instance
                                         .collection(widget.user.uid)
                                         .document(widget.currentList.keys
                                             .elementAt(widget.i))
-                                        .updateData({
-                                      listElement.elementAt(i).name:
-                                          !listElement.elementAt(i).isDone
-                                    });
+                                        .delete();
+                                    Navigator.pop(context);
+                                    Navigator.of(context).pop();
                                   },
-                                  child: Container(
-                                    height: 50.0,
-                                    color: listElement.elementAt(i).isDone
-                                        ? Color(0xFFF0F0F0)
-                                        : Color(0xFFFCFCFC),
-                                    child: Padding(
-                                      padding: EdgeInsets.only(left: 50.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            listElement.elementAt(i).isDone
-                                                ? FontAwesomeIcons.checkSquare
-                                                : FontAwesomeIcons.square,
-                                            color: listElement
-                                                    .elementAt(i)
-                                                    .isDone
-                                                ? currentColor
-                                                : Colors.black,
-                                            size: 20.0,
+                                  child: Text('YES'),
+                                  color: currentColor,
+                                  textColor: const Color(0xffffffff),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Icon(
+                      FontAwesomeIcons.trash,
+                      size: 25.0,
+                      color: currentColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 5.0, left: 50.0),
+              child: Row(
+                children: <Widget>[
+                  new Text(
+                    nbIsDone.toString() +
+                        " of " +
+                        listElement.length.toString() +
+                        " tasks",
+                    style: TextStyle(fontSize: 18.0, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: listElement.length,
+                  itemBuilder: (BuildContext ctxt, int i) {
+                    return new Slidable(
+                      delegate: new SlidableBehindDelegate(),
+                      actionExtentRatio: 0.25,
+                      child: GestureDetector(
+                        onTap: () {
+                          Firestore.instance
+                              .collection(widget.user.uid)
+                              .document(
+                                  widget.currentList.keys.elementAt(widget.i))
+                              .updateData({
+                            listElement.elementAt(i).name:
+                                !listElement.elementAt(i).isDone
+                          });
+                        },
+                        child: Container(
+                          height: 50.0,
+                          color: listElement.elementAt(i).isDone
+                              ? currentColor.withAlpha(150)
+                              : autoColor.withAlpha(150),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 50.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  listElement.elementAt(i).isDone
+                                      ? FontAwesomeIcons.checkSquare
+                                      : FontAwesomeIcons.square,
+                                  color: listElement.elementAt(i).isDone
+                                      ? currentColor
+                                      : Colors.black,
+                                  size: 20.0,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 30.0),
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    listElement.elementAt(i).name,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: listElement.elementAt(i).isDone
+                                        ? TextStyle(
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            color: autoColor.withAlpha(150),
+                                            fontSize: 27.0,
+                                          )
+                                        : TextStyle(
+                                            color: autoColor,
+                                            fontSize: 27.0,
                                           ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 30.0),
-                                          ),
-                                          Flexible(
-                                            child: Text(
-                                              listElement.elementAt(i).name,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                              style: listElement
-                                                      .elementAt(i)
-                                                      .isDone
-                                                  ? TextStyle(
-                                                      decoration: TextDecoration
-                                                          .lineThrough,
-                                                      color: currentColor,
-                                                      fontSize: 27.0,
-                                                    )
-                                                  : TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 27.0,
-                                                    ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                   ),
                                 ),
-                                secondaryActions: <Widget>[
-                                  new IconSlideAction(
-                                    caption: 'Delete',
-                                    color: Colors.red,
-                                    icon: Icons.delete,
-                                    onTap: () {
-                                        Firestore.instance
-                                            .collection(widget.user.uid)
-                                            .document(widget.currentList.keys
-                                            .elementAt(widget.i))
-                                            .updateData({
-                                          listElement.elementAt(i).name:
-                                          ""
-                                        });
-                                    },
-                                  ),
-                                ],
-                              );
-                            }),
-                      ),),
-                    ],
-                  ),
-                ),
-              ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      secondaryActions: <Widget>[
+                        new IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                          onTap: () {
+                            Firestore.instance
+                                .collection(widget.user.uid)
+                                .document(
+                                    widget.currentList.keys.elementAt(widget.i))
+                                .updateData(
+                                    {listElement.elementAt(i).name: ""});
+                          },
+                        ),
+                      ],
+                    );
+                  }),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 30.0,
+            )
+          ],
+        ),
       );
     }
   }
@@ -367,10 +438,13 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     pickerColor = Color(int.parse(widget.color));
     currentColor = Color(int.parse(widget.color));
+    autoColor =
+        currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
 
   Color pickerColor;
   Color currentColor;
+  Color autoColor;
 
   ValueChanged<Color> onColorChanged;
 
@@ -381,14 +455,7 @@ class _DetailPageState extends State<DetailPage> {
   Padding _getToolbar(BuildContext context) {
     return new Padding(
       padding: EdgeInsets.only(top: 50.0, left: 20.0, right: 12.0),
-      child:
-          new Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            new Image(
-                width: 35.0,
-                height: 35.0,
-                fit: BoxFit.cover,
-                image: new AssetImage('assets/list.png')
-            ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         RaisedButton(
           elevation: 3.0,
           onPressed: () {
@@ -411,16 +478,14 @@ class _DetailPageState extends State<DetailPage> {
                     FlatButton(
                       child: Text('Got it'),
                       onPressed: () {
-
                         Firestore.instance
                             .collection(widget.user.uid)
                             .document(
-                            widget.currentList.keys.elementAt(widget.i))
+                                widget.currentList.keys.elementAt(widget.i))
                             .updateData(
-                            {"color": pickerColor.value.toString()});
+                                {"color": pickerColor.value.toString()});
 
-                        setState(
-                                () => currentColor = pickerColor);
+                        setState(() => currentColor = pickerColor);
                         Navigator.of(context).pop();
                       },
                     ),
@@ -440,7 +505,7 @@ class _DetailPageState extends State<DetailPage> {
           child: new Icon(
             Icons.close,
             size: 40.0,
-            color: currentColor,
+            color: autoColor,
           ),
         ),
       ]),

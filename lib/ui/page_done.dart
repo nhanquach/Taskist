@@ -78,7 +78,8 @@ class _DonePageState extends State<DonePage>
                 },
                 child: new StreamBuilder<QuerySnapshot>(
                     stream: Firestore.instance
-                        .collection(widget.user.uid).orderBy("date", descending: true)
+                        .collection(widget.user.uid)
+                        .orderBy("date", descending: true)
                         .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -150,44 +151,44 @@ class _DonePageState extends State<DonePage>
             Navigator.of(context).push(
               new PageRouteBuilder(
                 pageBuilder: (_, __, ___) => new DetailPage(
-                      user: widget.user,
-                      i: index,
-                      currentList: userMap,
-                      color: cardColor.elementAt(index),
-                    ),
+                  user: widget.user,
+                  i: index,
+                  currentList: userMap,
+                  color: cardColor.elementAt(index),
+                ),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) =>
                         new ScaleTransition(
-                          scale: new Tween<double>(
-                            begin: 1.5,
-                            end: 1.0,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: animation,
-                              curve: Interval(
-                                0.50,
-                                1.00,
-                                curve: Curves.linear,
-                              ),
-                            ),
-                          ),
-                          child: ScaleTransition(
-                            scale: Tween<double>(
-                              begin: 0.0,
-                              end: 1.0,
-                            ).animate(
-                              CurvedAnimation(
-                                parent: animation,
-                                curve: Interval(
-                                  0.00,
-                                  0.50,
-                                  curve: Curves.linear,
-                                ),
-                              ),
-                            ),
-                            child: child,
-                          ),
+                  scale: new Tween<double>(
+                    begin: 1.5,
+                    end: 1.0,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Interval(
+                        0.50,
+                        1.00,
+                        curve: Curves.linear,
+                      ),
+                    ),
+                  ),
+                  child: ScaleTransition(
+                    scale: Tween<double>(
+                      begin: 0.0,
+                      end: 1.0,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Interval(
+                          0.00,
+                          0.50,
+                          curve: Curves.linear,
                         ),
+                      ),
+                    ),
+                    child: child,
+                  ),
+                ),
               ),
             );
           },
@@ -304,14 +305,12 @@ class _DonePageState extends State<DonePage>
   Padding _getToolbar(BuildContext context) {
     return new Padding(
       padding: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-      child:
-      new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      child: new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         new Image(
             width: 40.0,
             height: 40.0,
             fit: BoxFit.cover,
-            image: new AssetImage('assets/list.png')
-        ),
+            image: new AssetImage('assets/list.png')),
       ]),
     );
   }

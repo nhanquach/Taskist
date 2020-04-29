@@ -62,17 +62,16 @@ class _NewTaskPageState extends State<NewTaskPage> {
 
     print(_connectionStatus);
 
-    if(_connectionStatus == "ConnectivityResult.none"){
+    if (_connectionStatus == "ConnectivityResult.none") {
       showInSnackBar("No internet connection currently available");
       setState(() {
         _saving = false;
       });
     } else {
-
       bool isExist = false;
 
       QuerySnapshot query =
-      await Firestore.instance.collection(widget.user.uid).getDocuments();
+          await Firestore.instance.collection(widget.user.uid).getDocuments();
 
       query.documents.forEach((doc) {
         if (listNameController.text.toString() == doc.documentID) {
@@ -81,6 +80,8 @@ class _NewTaskPageState extends State<NewTaskPage> {
       });
 
       if (isExist == false && listNameController.text.isNotEmpty) {
+        print(currentColor.value.toString());
+        print(DateTime.now().millisecondsSinceEpoch);
         await Firestore.instance
             .collection(widget.user.uid)
             .document(listNameController.text.toString().trim())
@@ -113,108 +114,94 @@ class _NewTaskPageState extends State<NewTaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final _autoColor =
+        currentColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: pickerColor,
       body: ModalProgressHUD(
           child: new Stack(
             children: <Widget>[
-              _getToolbar(context),
-              Container(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 100.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              color: Colors.grey,
-                              height: 1.5,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildHeader(context, _autoColor),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+                    child: new Column(
+                      children: <Widget>[
+                        new TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "Name",
+                            labelStyle: TextStyle(color: _autoColor),
+                          ),
+                          controller: listNameController,
+                          autofocus: true,
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            color: _autoColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.sentences,
+                        ),
+                        new Padding(
+                          padding: EdgeInsets.only(bottom: 10.0),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RichText(
+                              text: TextSpan(
+                                  text: "Task color: ",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .body1
+                                      .merge(TextStyle(color: _autoColor)),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          "#${currentColor.toString().substring(8, 14)}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subhead
+                                          .merge(TextStyle(color: _autoColor)),
+                                    ),
+                                  ]),
                             ),
-                          ),
-                          Expanded(
-                              flex: 2,
-                              child: new Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    'New',
-                                    style: new TextStyle(
-                                        fontSize: 30.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    'List',
-                                    style: new TextStyle(
-                                        fontSize: 28.0, color: Colors.grey),
-                                  )
-                                ],
-                              )),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              color: Colors.grey,
-                              height: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-                      child: new Column(
-                        children: <Widget>[
-                          new TextFormField(
-                            decoration: InputDecoration(
-                                border: new OutlineInputBorder(
-                                    borderSide:
-                                        new BorderSide(color: Colors.teal)),
-                                labelText: "List name",
-                                contentPadding: EdgeInsets.only(
-                                    left: 16.0,
-                                    top: 20.0,
-                                    right: 16.0,
-                                    bottom: 5.0)),
-                            controller: listNameController,
-                            autofocus: true,
-                            style: TextStyle(
-                              fontSize: 22.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            keyboardType: TextInputType.text,
-                            textCapitalization: TextCapitalization.sentences,
-                            maxLength: 20,
-                          ),
-                          new Padding(
-                            padding: EdgeInsets.only(bottom: 10.0),
-                          ),
-                          ButtonTheme(
-                            minWidth: double.infinity,
-                            child: RaisedButton(
-                              elevation: 3.0,
+                            OutlineButton.icon(
+                              icon: Icon(Icons.color_lens),
+                              label: Text("Change"),
+                              textColor: currentColor.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
                               onPressed: () {
                                 pickerColor = currentColor;
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: const Text('Pick a color!'),
+                                      title: Text(
+                                        'Pick a color',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle,
+                                      ),
                                       content: SingleChildScrollView(
                                         child: ColorPicker(
                                           pickerColor: pickerColor,
                                           onColorChanged: changeColor,
                                           enableLabel: true,
-                                          colorPickerWidth: 1000.0,
+                                          colorPickerWidth: 300.0,
                                           pickerAreaHeightPercent: 0.7,
+                                          paletteType: PaletteType.hsl,
                                         ),
                                       ),
                                       actions: <Widget>[
-                                        FlatButton(
+                                        RaisedButton(
                                           child: Text('Got it'),
                                           onPressed: () {
                                             setState(() =>
@@ -227,33 +214,34 @@ class _NewTaskPageState extends State<NewTaskPage> {
                                   },
                                 );
                               },
-                              child: Text('Card color'),
-                              color: currentColor,
-                              textColor: const Color(0xffffffff),
                             ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 15.0),
+                      child: FloatingActionButton.extended(
+                        backgroundColor: Color(0xff2A25D7),
+                        label: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 32.0, right: 32.0),
+                          child: Text(
+                            'Add',
+                            style: Theme.of(context).textTheme.body1.merge(
+                                  TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
                           ),
-                        ],
+                        ),
+                        onPressed: addToFirebase,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 50.0),
-                      child: new Column(
-                        children: <Widget>[
-                          new RaisedButton(
-                            child: const Text(
-                              'Add',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            color: Colors.blue,
-                            elevation: 4.0,
-                            splashColor: Colors.deepPurple,
-                            onPressed: addToFirebase,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -263,6 +251,42 @@ class _NewTaskPageState extends State<NewTaskPage> {
 
   changeColor(Color color) {
     setState(() => pickerColor = color);
+  }
+
+  Widget _buildHeader(BuildContext context, Color _autoColor) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 30.0),
+          InkWell(
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: _autoColor,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          Text(
+            "Add",
+            style: Theme.of(context)
+                .textTheme
+                .title
+                .merge(TextStyle(color: _autoColor)),
+          ),
+          Text(
+            "new task",
+            style: Theme.of(context)
+                .textTheme
+                .subtitle
+                .merge(TextStyle(color: _autoColor)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -278,10 +302,10 @@ class _NewTaskPageState extends State<NewTaskPage> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-          setState(() {
-            _connectionStatus = result.toString();
-          });
-        });
+      setState(() {
+        _connectionStatus = result.toString();
+      });
+    });
   }
 
   void showInSnackBar(String value) {
@@ -292,12 +316,5 @@ class _NewTaskPageState extends State<NewTaskPage> {
       backgroundColor: currentColor,
       duration: Duration(seconds: 3),
     ));
-  }
-
-  Container _getToolbar(BuildContext context) {
-    return new Container(
-      margin: new EdgeInsets.only(left: 10.0, top: 40.0),
-      child: new BackButton(color: Colors.black),
-    );
   }
 }
